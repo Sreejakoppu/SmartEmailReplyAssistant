@@ -24,10 +24,8 @@ public class EmailGeneratorService {
     }
 
     public String generateEmailReply(EmailRequest emailRequest) {
-        // 1. Build the prompt
-        String prompt = buildprompt(emailRequest);
+        String prompt = buildPrompt(emailRequest);
 
-        // 2. Construct the request body using Lists (for correct JSON serialization)
         Map<String, Object> requestBody = Map.of(
                 "contents", List.of(
                         Map.of("parts", List.of(
@@ -36,7 +34,6 @@ public class EmailGeneratorService {
                 )
         );
 
-        // 3. Make API call with WebClient
         try {
             String response = webClient.post()
                     .uri(uriBuilder -> uriBuilder
@@ -51,7 +48,6 @@ public class EmailGeneratorService {
                     .bodyToMono(String.class)
                     .block();
 
-            // 4. Extract response text
             return extractResponseContent(response);
         } catch (Exception e) {
             return "Error during API call: " + e.getMessage();
@@ -75,7 +71,7 @@ public class EmailGeneratorService {
         }
     }
 
-    private String buildprompt(EmailRequest emailRequest) {
+    private String buildPrompt(EmailRequest emailRequest) {
         StringBuilder prompt = new StringBuilder();
         prompt.append("Generate a professional email reply for the following email content. Please don't generate a subject line. ");
 
