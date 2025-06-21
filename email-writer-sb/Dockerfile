@@ -1,12 +1,15 @@
-# Build stage
-FROM maven:3.9.6-eclipse-temurin-17 AS build
+# Build stage with Java 24
+FROM bellsoft/liberica-openjdk-alpine:24 AS build
 
 WORKDIR /app
 COPY . .
-RUN mvn clean package -DskipTests
 
-# Runtime stage
-FROM eclipse-temurin:17-jdk
+# Install Maven manually since this image doesn't include it
+RUN apk add --no-cache maven \
+    && mvn clean package -DskipTests
+
+# Runtime stage with Java 24
+FROM bellsoft/liberica-openjdk-alpine:24
 
 WORKDIR /app
 COPY --from=build /app/target/email-writer-sb-0.0.1-SNAPSHOT.jar app.jar
